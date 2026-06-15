@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-ink text-fg font-sans antialiased;
+    background-image:
+      radial-gradient(60rem 60rem at 110% -10%, rgba(245, 166, 35, 0.06), transparent 60%),
+      radial-gradient(50rem 50rem at -10% 110%, rgba(45, 212, 191, 0.05), transparent 60%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  ::selection {
+    background: rgba(245, 166, 35, 0.3);
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: #262e38;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 999px;
+  background: #f5a623;
+  border: 2px solid #0e1116;
+  box-shadow: 0 0 0 1px #f5a623;
+}
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border: 2px solid #0e1116;
+  border-radius: 999px;
+  background: #f5a623;
+}
+
+.thin-scroll::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.thin-scroll::-webkit-scrollbar-thumb {
+  background: #262e38;
+  border-radius: 999px;
+}
+.thin-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
