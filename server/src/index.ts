@@ -2,7 +2,7 @@ import express, { type Request, type Response, type NextFunction } from "express
 import cors from "cors";
 import multer from "multer";
 import { spawn } from "node:child_process";
-import { promises as fs, existsSync } from "node:fs";
+import { promises as fs, existsSync, mkdirSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
@@ -18,14 +18,26 @@ const FFMPEG_PRESET = process.env.FFMPEG_PRESET || "veryfast";
 
 app.use(cors());
 
+const UPLOAD_DIR = path.join(os.tmpdir(), "instant-lapse-uploads");
+mkdirSync(UPLOAD_DIR, { recursive: true });
+
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, UPLOAD_DIR),
+    filename: (_req, file, cb) => {
+      const ext =
+        extFromMime(file.mimetype) ?? (path.extname(file.originalname) || ".png");
+      cb(null, `${crypto.randomUUID()}${ext}`);
+    },
+  }),
   limits: { fileSize: MAX_FILE_SIZE_MB * 1024 * 1024, files: MAX_FILES },
 });
 
 function handleUpload(req: Request, res: Response, next: NextFunction) {
   upload.array("frames")(req, res, (err: unknown) => {
     if (!err) return next();
+    const saved = (req.files as Express.Multer.File[]) ?? [];
+    saved.forEach((f) => f.path && fs.rm(f.path, { force: true }).catch(() => {}));
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_COUNT") {
         return res
@@ -90,16 +102,12 @@ app.post("/api/render", handleUpload, async (req, res) => {
   try {
     const listLines: string[] = [];
     for (let i = 0; i < sorted.length; i++) {
-      const f = sorted[i];
-      const ext = extFromMime(f.mimetype) ?? (path.extname(f.originalname) || ".png");
-      const fp = path.join(workdir, `${String(i).padStart(5, "0")}${ext}`);
-      await fs.writeFile(fp, f.buffer);
-
+      const safePath = sorted[i].path.replace(/'/g, "'\\''");
       const dur = clampNum(durations[i], 0.04, 60, 2);
-      listLines.push(`file '${fp.replace(/'/g, "'\\''")}'`);
+      listLines.push(`file '${safePath}'`);
       listLines.push(`duration ${dur.toFixed(3)}`);
       if (i === sorted.length - 1) {
-        listLines.push(`file '${fp.replace(/'/g, "'\\''")}'`);
+        listLines.push(`file '${safePath}'`);
       }
     }
 
@@ -139,6 +147,9 @@ app.post("/api/render", handleUpload, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: "Failed to generate the video. Check the server log." });
   } finally {
+    await Promise.all(
+      files.map((f) => fs.rm(f.path, { force: true }).catch(() => {}))
+    );
     fs.rm(workdir, { recursive: true, force: true }).catch(() => {});
   }
 });
@@ -150,9 +161,16 @@ function runFfmpeg(args: string[]): Promise<void> {
     let stderr = "";
     proc.stderr.on("data", (d) => (stderr += d.toString()));
     proc.on("error", reject);
-    proc.on("close", (code) => {
+    proc.on("close", (code, signal) => {
       if (code === 0) resolve();
-      else reject(new Error(`ffmpeg exited with code ${code}: ${stderr.slice(-800)}`));
+      else
+        reject(
+          new Error(
+            `ffmpeg exited with code ${code}${
+              signal ? ` (signal ${signal})` : ""
+            }: ${stderr.slice(-800)}`
+          )
+        );
     });
   });
 }
