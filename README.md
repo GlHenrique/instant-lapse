@@ -11,12 +11,18 @@ Everything runs on your own machine — **your images never leave your computer.
 
 <br />
 
+[![Live demo](https://img.shields.io/badge/Live_demo-instant--lapse.vercel.app-000000?logo=vercel&logoColor=white)](https://instant-lapse.vercel.app/)
+
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![FFmpeg](https://img.shields.io/badge/FFmpeg-bundled-007808?logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
+
+**🔗 Live demo: [instant-lapse.vercel.app](https://instant-lapse.vercel.app/)**
+
+<sub>The hosted demo runs the editor, live preview and HEIC conversion fully in the browser. Final MP4 export requires the backend to be running.</sub>
 
 [Features](#-features) · [Quick start](#-quick-start) · [How it works](#-how-it-works) · [Configuration](#-configuration) · [Production build](#-production-build)
 
