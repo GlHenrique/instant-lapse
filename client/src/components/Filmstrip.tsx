@@ -21,9 +21,16 @@ interface FilmstripProps {
   onReorder: (frames: Frame[]) => void;
   onRemove: (id: string) => void;
   onDuration: (id: string, value: number) => void;
+  onMove: (id: string, targetIndex: number) => void;
 }
 
-export function Filmstrip({ frames, onReorder, onRemove, onDuration }: FilmstripProps) {
+export function Filmstrip({
+  frames,
+  onReorder,
+  onRemove,
+  onDuration,
+  onMove,
+}: FilmstripProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -53,8 +60,10 @@ export function Filmstrip({ frames, onReorder, onRemove, onDuration }: Filmstrip
               key={frame.id}
               frame={frame}
               index={i}
+              total={frames.length}
               onRemove={onRemove}
               onDuration={onDuration}
+              onMove={onMove}
             />
           ))}
         </div>

@@ -2,6 +2,7 @@ const pt = {
   tagline: "suas imagens em timelapse em instantes",
   clearAll: "Limpar tudo",
   language: "Idioma",
+  toggleTheme: "Alternar tema",
 
   heroTitleA: "Transforme uma sequência de fotos",
   heroTitleB: "em vídeo",
@@ -42,6 +43,8 @@ const pt = {
   duration: "Duração",
   removeImage: "Remover imagem",
   dragToReorder: "Arraste para reordenar",
+  changePosition: "Mudar posição",
+  positionInput: "Nova posição",
   frameAlt: "Quadro {n}",
 
   play: "Reproduzir",
@@ -60,6 +63,7 @@ const en: Record<keyof typeof pt, string> = {
   tagline: "your images into timelapse in an instant",
   clearAll: "Clear all",
   language: "Language",
+  toggleTheme: "Toggle theme",
 
   heroTitleA: "Turn a sequence of photos",
   heroTitleB: "into video",
@@ -100,6 +104,8 @@ const en: Record<keyof typeof pt, string> = {
   duration: "Duration",
   removeImage: "Remove image",
   dragToReorder: "Drag to reorder",
+  changePosition: "Change position",
+  positionInput: "New position",
   frameAlt: "Frame {n}",
 
   play: "Play",

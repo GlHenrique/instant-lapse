@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { arrayMove } from "@dnd-kit/sortable";
 import { Download, Film, Loader2, Sparkles, Trash2 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { LogoMark } from "./components/Logo";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { useI18n } from "./i18n/I18nProvider";
 import { Card } from "./components/ui/card";
 import { Uploader } from "./components/Uploader";
@@ -108,6 +110,16 @@ export default function App() {
     );
   }, []);
 
+  const moveFrame = useCallback((id: string, targetIndex: number) => {
+    setFrames((prev) => {
+      const from = prev.findIndex((f) => f.id === id);
+      if (from < 0) return prev;
+      const to = Math.max(0, Math.min(prev.length - 1, targetIndex));
+      if (to === from) return prev;
+      return arrayMove(prev, from, to);
+    });
+  }, []);
+
   const applyToAll = useCallback((seconds: number) => {
     setFrames((prev) => prev.map((f) => ({ ...f, duration: seconds })));
   }, []);
@@ -186,6 +198,7 @@ export default function App() {
               <Trash2 className="h-4 w-4" /> {t("clearAll")}
             </Button>
           )}
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
       </header>
@@ -209,7 +222,7 @@ export default function App() {
             </p>
           )}
           {error && (
-            <p className="mt-4 text-sm text-red-300">{error}</p>
+            <p className="mt-4 text-sm text-danger">{error}</p>
           )}
         </section>
       ) : (
@@ -237,6 +250,7 @@ export default function App() {
                 onReorder={setFrames}
                 onRemove={removeFrame}
                 onDuration={setDuration}
+                onMove={moveFrame}
               />
               <div className="mt-4">
                 <Uploader onAdd={addFiles} compact />
@@ -290,7 +304,7 @@ export default function App() {
               </Button>
 
               {error && (
-                <p className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                <p className="mt-3 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-danger">
                   {error}
                 </p>
               )}
@@ -304,7 +318,7 @@ export default function App() {
                     src={resultUrl}
                     controls
                     loop
-                    className="w-full rounded-lg border border-line bg-ink"
+                    className="w-full rounded-lg border border-line bg-stage"
                   />
                   <label className="mt-3 block text-xs font-medium uppercase tracking-wider text-muted">
                     {t("fileName")}

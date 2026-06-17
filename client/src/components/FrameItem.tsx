@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X } from "lucide-react";
@@ -10,14 +10,50 @@ import { cn } from "@/lib/utils";
 interface FrameItemProps {
   frame: Frame;
   index: number;
+  total: number;
   onRemove: (id: string) => void;
   onDuration: (id: string, value: number) => void;
+  onMove: (id: string, targetIndex: number) => void;
 }
 
-function FrameItemBase({ frame, index, onRemove, onDuration }: FrameItemProps) {
+function FrameItemBase({
+  frame,
+  index,
+  total,
+  onRemove,
+  onDuration,
+  onMove,
+}: FrameItemProps) {
   const { t } = useI18n();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: frame.id });
+
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const doneRef = useRef(false);
+
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
+
+  function startEdit() {
+    doneRef.current = false;
+    setEditing(true);
+  }
+
+  function finish(apply: boolean) {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    setEditing(false);
+    if (!apply) return;
+    const n = parseInt(inputRef.current?.value ?? "", 10);
+    if (!Number.isFinite(n)) return;
+    const target = Math.max(1, Math.min(total, n)) - 1;
+    if (target !== index) onMove(frame.id, target);
+  }
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -35,9 +71,29 @@ function FrameItemBase({ frame, index, onRemove, onDuration }: FrameItemProps) {
       )}
     >
       <div className="absolute left-2 top-2 z-10 flex items-center gap-1">
-        <span className="rounded-md bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-amber">
-          {String(index + 1).padStart(2, "0")}
-        </span>
+        {editing ? (
+          <input
+            ref={inputRef}
+            type="text"
+            inputMode="numeric"
+            defaultValue={index + 1}
+            aria-label={t("positionInput")}
+            onBlur={() => finish(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") finish(true);
+              else if (e.key === "Escape") finish(false);
+            }}
+            className="w-10 rounded-md border border-amber bg-ink px-1 py-0.5 text-center font-mono text-xs text-amber outline-none"
+          />
+        ) : (
+          <button
+            onClick={startEdit}
+            aria-label={t("changePosition")}
+            className="rounded-md bg-ink/80 px-1.5 py-0.5 font-mono text-xs text-amber transition-colors hover:bg-amber hover:text-ink"
+          >
+            {String(index + 1).padStart(2, "0")}
+          </button>
+        )}
       </div>
 
       <button

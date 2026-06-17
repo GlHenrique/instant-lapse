@@ -2,10 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+:root,
+.dark {
+  color-scheme: dark;
+  --c-ink: 14 17 22;
+  --c-panel: 22 27 34;
+  --c-panel2: 28 35 44;
+  --c-line: 38 46 56;
+  --c-fg: 230 234 240;
+  --c-muted: 138 148 166;
+  --c-teal: 45 212 191;
+  --c-danger: 252 165 165;
+  --scroll-thumb: #3a4452;
+  --scroll-thumb-hover: #4a5563;
+}
+
+.light {
+  color-scheme: light;
+  --c-ink: 246 247 249;
+  --c-panel: 255 255 255;
+  --c-panel2: 240 242 245;
+  --c-line: 223 227 233;
+  --c-fg: 26 31 38;
+  --c-muted: 91 101 115;
+  --c-teal: 13 148 136;
+  --c-danger: 220 38 38;
+  --scroll-thumb: #c2c9d2;
+  --scroll-thumb-hover: #a9b2bd;
+}
+
 @layer base {
-  html {
-    color-scheme: dark;
-  }
   body {
     @apply bg-ink text-fg font-sans antialiased;
     background-image:
@@ -24,7 +50,7 @@ input[type="range"] {
   appearance: none;
   height: 4px;
   border-radius: 999px;
-  background: #262e38;
+  background: rgb(var(--c-line));
   cursor: pointer;
 }
 input[type="range"]::-webkit-slider-thumb {
@@ -34,24 +60,33 @@ input[type="range"]::-webkit-slider-thumb {
   width: 16px;
   border-radius: 999px;
   background: #f5a623;
-  border: 2px solid #0e1116;
+  border: 2px solid rgb(var(--c-panel));
   box-shadow: 0 0 0 1px #f5a623;
 }
 input[type="range"]::-moz-range-thumb {
   height: 16px;
   width: 16px;
-  border: 2px solid #0e1116;
+  border: 2px solid rgb(var(--c-panel));
   border-radius: 999px;
   background: #f5a623;
 }
 
+.thin-scroll {
+  scrollbar-width: auto;
+  scrollbar-color: var(--scroll-thumb) transparent;
+}
 .thin-scroll::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+  height: 20px;
+  width: 20px;
 }
 .thin-scroll::-webkit-scrollbar-thumb {
-  background: #262e38;
+  background: var(--scroll-thumb);
   border-radius: 999px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+.thin-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--scroll-thumb-hover);
 }
 .thin-scroll::-webkit-scrollbar-track {
   background: transparent;

@@ -106,7 +106,7 @@ export function Preview({ frames, aspect }: PreviewProps) {
 
   return (
     <div>
-      <div className="overflow-hidden rounded-xl border border-line bg-ink">
+      <div className="overflow-hidden rounded-xl border border-line bg-stage">
         <canvas
           ref={canvasRef}
           className="mx-auto block h-auto w-auto max-w-full"
